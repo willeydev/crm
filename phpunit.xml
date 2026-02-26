@@ -11,7 +11,13 @@
     </testsuites>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="APP_DEBUG" value="true"/>
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="JWT_SECRET" value="test_jwt_secret_para_testes_unitarios"/>
+        <env name="JWT_TTL" value="1440"/>
+        <env name="BRASILAPI_URL" value="https://brasilapi.com.br/api/cep/v1"/>
     </php>
 </phpunit>
