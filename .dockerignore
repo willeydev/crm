@@ -1,0 +1,14 @@
+vendor/
+.git/
+.gitignore
+.env
+.env.example
+docker-compose.yml
+.dockerignore
+*.md
+*.log
+storage/logs/*.log
+.idea/
+.phpunit.result.cache
+tests/
+Homestead.*

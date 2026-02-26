@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crm_app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DB_HOST: pgsql
+      DB_PORT: 5432
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor  # preserva vendor do container
+    networks:
+      - crm_network
+
+  pgsql:
+    image: postgres:16-alpine
+    container_name: crm_pgsql
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-crm}
+      POSTGRES_USER: ${DB_USERNAME:-crm_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-crm_password}
+    volumes:
+      - pgsql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-crm_user} -d ${DB_DATABASE:-crm}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - crm_network
+
+volumes:
+  pgsql_data:
+
+networks:
+  crm_network:
+    driver: bridge
