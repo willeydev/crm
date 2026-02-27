@@ -226,7 +226,9 @@ Após o logout, o token é adicionado a uma blacklist e rejeitado em requisiçõ
 
 Para testar a API de forma mais prática, importe a collection do Postman:
 
-**[Baixar collection](https://drive.google.com/file/d/1rlaJ0tSR16UALmTNoPpZLn5qDJOnO3Ma/view?usp=sharing)**
+**[Baixar collection](https://drive.google.com/file/d/19xgLIFVy-sABH_kUjyUY7Fp8Zh7eWzQ-/view?usp=sharing)**
+
+> ⚠️ **Atenção:** em requests que envolvem IDs na URL (ex: `/customers/{id}` ou `/customers/{id}/addresses/{addressId}`), certifique-se de que os IDs informados existem no banco. Rode o seeder (`php artisan db:seed`) para popular dados de exemplo.
 
 Após importar, crie as seguintes variáveis de ambiente no Postman:
 
