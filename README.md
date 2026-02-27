@@ -4,6 +4,19 @@ API RESTful para gerenciamento de clientes e endereços, desenvolvida como desaf
 
 ---
 
+## Sumário
+
+- [📖 Descrição do projeto](#-descrição-do-projeto)
+- [🏗 Arquitetura escolhida](#-arquitetura-escolhida)
+- [🚀 Como rodar o projeto](#-como-rodar-o-projeto)
+- [🗄 Configuração do banco](#-configuração-do-banco)
+- [🔐 Como autenticar](#-como-autenticar)
+- [📬 Exemplos de requests](#-exemplos-de-requests)
+- [🧪 Como rodar os testes](#-como-rodar-os-testes)
+- [📌 Decisões técnicas](#-decisões-técnicas)
+
+---
+
 ## 📖 Descrição do projeto
 
 Sistema que permite a usuários autenticados gerenciar sua própria base de clientes e os endereços associados a cada um. Cada usuário enxerga e manipula apenas seus próprios dados (isolamento por propriedade).
