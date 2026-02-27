@@ -24,3 +24,11 @@ $router->group(['prefix' => 'auth'], function () use ($router) {
         $router->get('me',      'AuthController@me');
     });
 });
+
+$router->group(['prefix' => 'customers', 'middleware' => 'auth'], function () use ($router) {
+    $router->get('',        'CustomerController@index');
+    $router->post('',       'CustomerController@store');
+    $router->get('{id}',    'CustomerController@show');
+    $router->put('{id}',    'CustomerController@update');
+    $router->delete('{id}', 'CustomerController@destroy');
+});
