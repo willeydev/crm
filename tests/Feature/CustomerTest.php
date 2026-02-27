@@ -36,6 +36,21 @@ class CustomerTest extends TestCase
         $this->assertCount(3, $data);
     }
 
+    public function test_list_customers_returns_pagination_meta(): void
+    {
+        $user = User::factory()->create();
+        Customer::factory()->count(5)->create(['user_id' => $user->id]);
+
+        $this->get('/api/v1/customers?per_page=2', $this->authHeader($user));
+
+        $this->assertResponseStatus(200);
+        $body = json_decode($this->response->getContent(), true);
+        $this->assertCount(2, $body['data']);
+        $this->assertEquals(2, $body['meta']['per_page']);
+        $this->assertEquals(5, $body['meta']['total']);
+        $this->assertEquals(3, $body['meta']['last_page']);
+    }
+
     public function test_list_customers_requires_authentication(): void
     {
         $this->get('/api/v1/customers');
