@@ -3,13 +3,13 @@
 namespace App\Domain\Customer\Repositories;
 
 use App\Domain\Customer\Models\Customer;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class CustomerRepository implements CustomerRepositoryInterface
 {
-    public function allByUser(int $userId): Collection
+    public function allByUser(int $userId, int $perPage): LengthAwarePaginator
     {
-        return Customer::where('user_id', $userId)->get();
+        return Customer::where('user_id', $userId)->paginate($perPage);
     }
 
     public function findByIdAndUser(int $id, int $userId): ?Customer

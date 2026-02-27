@@ -4,7 +4,7 @@ namespace App\Application\Services;
 
 use App\Domain\Customer\Models\Customer;
 use App\Domain\Customer\Repositories\CustomerRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CustomerService
@@ -13,9 +13,9 @@ class CustomerService
         private readonly CustomerRepositoryInterface $customerRepository
     ) {}
 
-    public function listByUser(int $userId): Collection
+    public function listByUser(int $userId, int $perPage = 15): LengthAwarePaginator
     {
-        return $this->customerRepository->allByUser($userId);
+        return $this->customerRepository->allByUser($userId, $perPage);
     }
 
     public function findOwned(int $id, int $userId): Customer

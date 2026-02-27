@@ -16,8 +16,14 @@ class CustomerController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $customers = $this->customerService->listByUser($request->user()->id);
-        return $this->success(CustomerResource::collection($customers), 'Clientes listados com sucesso.');
+        $perPage   = max(1, min(100, (int) $request->query('per_page', 15)));
+        $paginator = $this->customerService->listByUser($request->user()->id, $perPage);
+
+        return $this->paginated(
+            $paginator,
+            CustomerResource::collection($paginator->items()),
+            'Clientes listados com sucesso.'
+        );
     }
 
     public function store(Request $request): JsonResponse
