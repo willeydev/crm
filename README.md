@@ -80,7 +80,7 @@ git clone <repo-url>
 cd crm
 ```
 
-### 2. Configure o ambiente
+### 2. Configure o ambiente (Verifique as variáveis corretas na seção de Configuração do Banco de Dadoss)
 
 ```bash
 cp .env.example .env
@@ -119,7 +119,7 @@ http://localhost:8000/api/v1
 
 ## 🗄 Configuração do banco
 
-### Produção (PostgreSQL via Docker)
+### Desenvolvimento local (PostgreSQL via Docker)
 
 ```dotenv
 DB_CONNECTION=pgsql
