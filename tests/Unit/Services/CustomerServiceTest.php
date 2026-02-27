@@ -5,7 +5,7 @@ namespace Tests\Unit\Services;
 use App\Application\Services\CustomerService;
 use App\Domain\Customer\Models\Customer;
 use App\Domain\Customer\Repositories\CustomerRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Mockery;
 use Mockery\MockInterface;
@@ -29,21 +29,17 @@ class CustomerServiceTest extends UnitTestCase
 
     public function test_list_returns_customers_of_user(): void
     {
-        $collection = new Collection([
-            new Customer(['name' => 'A']),
-            new Customer(['name' => 'B']),
-        ]);
+        $paginator = Mockery::mock(LengthAwarePaginator::class);
 
         $this->customerRepo
             ->shouldReceive('allByUser')
             ->once()
-            ->with(1)
-            ->andReturn($collection);
+            ->with(1, 15)
+            ->andReturn($paginator);
 
         $result = $this->service->listByUser(1);
 
-        $this->assertCount(2, $result);
-        $this->assertSame($collection, $result);
+        $this->assertSame($paginator, $result);
     }
 
     // =========================================================

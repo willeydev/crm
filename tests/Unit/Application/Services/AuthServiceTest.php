@@ -147,6 +147,8 @@ class AuthServiceTest extends UnitTestCase
             ->with(hash('sha256', $token), Mockery::type(\DateTimeInterface::class));
 
         $this->service->logout($token);
+
+        $this->addToAssertionCount(1); // Mockery verifica que revoke() foi chamado exatamente uma vez
     }
 
     public function test_logout_with_invalid_token_does_nothing(): void
@@ -154,6 +156,8 @@ class AuthServiceTest extends UnitTestCase
         $this->revokedTokenRepo->shouldNotReceive('revoke');
 
         $this->service->logout('token.invalido.aqui');
+
+        $this->addToAssertionCount(1); // Mockery verifica que revoke() NÃO foi chamado
     }
 
     // =========================================================
