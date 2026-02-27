@@ -9,11 +9,12 @@ use GuzzleHttp\Exception\ClientException;
 class BrasilApiCepGateway implements CepGatewayInterface
 {
     private Client $http;
+    private string $baseUri;
 
     public function __construct(?Client $http = null)
     {
-        $baseUri    = rtrim(env('BRASILAPI_URL', 'https://brasilapi.com.br/api/cep/v1'), '/') . '/';
-        $this->http = $http ?? new Client(['base_uri' => $baseUri]);
+        $this->baseUri = rtrim(env('BRASILAPI_URL', 'https://brasilapi.com.br/api/cep/v1'), '/') . '/';
+        $this->http    = $http ?? new Client();
     }
 
     public function lookup(string $cep): ?array
@@ -25,7 +26,7 @@ class BrasilApiCepGateway implements CepGatewayInterface
         }
 
         try {
-            $response = $this->http->get($cep);
+            $response = $this->http->get($this->baseUri . $cep);
             $data     = json_decode($response->getBody()->getContents(), true);
 
             return [
