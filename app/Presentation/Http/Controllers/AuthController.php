@@ -15,10 +15,12 @@ class AuthController extends Controller
 {
     public function __construct(private readonly AuthService $authService) {}
 
-    public function register(RegisterRequest $request): JsonResponse
+    public function register(Request $request): JsonResponse
     {
+        $rules = new RegisterRequest();
+
         try {
-            $this->validate($request, $request->rules(), $request->messages());
+            $this->validate($request, $rules->rules(), $rules->messages());
         } catch (ValidationException $e) {
             return $this->error('Dados inválidos.', 422, $e->errors());
         }
@@ -35,10 +37,12 @@ class AuthController extends Controller
         ], 'Usuário registrado com sucesso.');
     }
 
-    public function login(LoginRequest $request): JsonResponse
+    public function login(Request $request): JsonResponse
     {
+        $rules = new LoginRequest();
+
         try {
-            $this->validate($request, $request->rules(), $request->messages());
+            $this->validate($request, $rules->rules(), $rules->messages());
         } catch (ValidationException $e) {
             return $this->error('Dados inválidos.', 422, $e->errors());
         }
