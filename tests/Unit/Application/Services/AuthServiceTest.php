@@ -4,6 +4,7 @@ namespace Tests\Unit\Application\Services;
 
 use App\Application\Services\AuthService;
 use App\Domain\User\Models\User;
+use App\Domain\User\Repositories\RevokedTokenRepositoryInterface;
 use App\Domain\User\Repositories\UserRepositoryInterface;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Hash;
@@ -14,13 +15,15 @@ use Tests\Unit\UnitTestCase;
 class AuthServiceTest extends UnitTestCase
 {
     private MockInterface $userRepo;
+    private MockInterface $revokedTokenRepo;
     private AuthService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->userRepo = Mockery::mock(UserRepositoryInterface::class);
-        $this->service  = new AuthService($this->userRepo);
+        $this->userRepo         = Mockery::mock(UserRepositoryInterface::class);
+        $this->revokedTokenRepo = Mockery::mock(RevokedTokenRepositoryInterface::class);
+        $this->service          = new AuthService($this->userRepo, $this->revokedTokenRepo);
     }
 
     // =========================================================
@@ -126,6 +129,34 @@ class AuthServiceTest extends UnitTestCase
     }
 
     // =========================================================
+    // logout()
+    // =========================================================
+
+    public function test_logout_revokes_token(): void
+    {
+        $token = JWT::encode([
+            'iss' => 'crm-api',
+            'sub' => 1,
+            'iat' => time(),
+            'exp' => time() + 3600,
+        ], env('JWT_SECRET'), 'HS256');
+
+        $this->revokedTokenRepo
+            ->shouldReceive('revoke')
+            ->once()
+            ->with(hash('sha256', $token), Mockery::type(\DateTimeInterface::class));
+
+        $this->service->logout($token);
+    }
+
+    public function test_logout_with_invalid_token_does_nothing(): void
+    {
+        $this->revokedTokenRepo->shouldNotReceive('revoke');
+
+        $this->service->logout('token.invalido.aqui');
+    }
+
+    // =========================================================
     // getUserFromToken()
     // =========================================================
 
@@ -141,6 +172,12 @@ class AuthServiceTest extends UnitTestCase
             'exp' => time() + 3600,
         ], env('JWT_SECRET'), 'HS256');
 
+        $this->revokedTokenRepo
+            ->shouldReceive('isRevoked')
+            ->once()
+            ->with(hash('sha256', $token))
+            ->andReturn(false);
+
         $this->userRepo
             ->shouldReceive('findById')
             ->once()
@@ -152,8 +189,31 @@ class AuthServiceTest extends UnitTestCase
         $this->assertSame($user, $result);
     }
 
+    public function test_get_user_from_revoked_token_returns_null(): void
+    {
+        $token = JWT::encode([
+            'iss' => 'crm-api',
+            'sub' => 1,
+            'iat' => time(),
+            'exp' => time() + 3600,
+        ], env('JWT_SECRET'), 'HS256');
+
+        $this->revokedTokenRepo
+            ->shouldReceive('isRevoked')
+            ->once()
+            ->with(hash('sha256', $token))
+            ->andReturn(true);
+
+        $this->userRepo->shouldNotReceive('findById');
+
+        $result = $this->service->getUserFromToken($token);
+
+        $this->assertNull($result);
+    }
+
     public function test_get_user_from_invalid_token_returns_null(): void
     {
+        $this->revokedTokenRepo->shouldNotReceive('isRevoked');
         $this->userRepo->shouldNotReceive('findById');
 
         $result = $this->service->getUserFromToken('token.invalido.aqui');
@@ -163,13 +223,14 @@ class AuthServiceTest extends UnitTestCase
 
     public function test_get_user_from_expired_token_returns_null(): void
     {
+        $this->revokedTokenRepo->shouldNotReceive('isRevoked');
         $this->userRepo->shouldNotReceive('findById');
 
         $expiredToken = JWT::encode([
             'iss' => 'crm-api',
             'sub' => 1,
             'iat' => time() - 7200,
-            'exp' => time() - 3600, // expirado
+            'exp' => time() - 3600,
         ], env('JWT_SECRET'), 'HS256');
 
         $result = $this->service->getUserFromToken($expiredToken);
