@@ -3,6 +3,9 @@
 namespace App\Presentation\Http\Controllers;
 
 use App\Application\Services\AddressService;
+use App\Presentation\Http\Requests\Address\StoreAddressRequest;
+use App\Presentation\Http\Requests\Address\UpdateAddressRequest;
+use App\Presentation\Http\Resources\AddressResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -14,25 +17,17 @@ class AddressController extends Controller
     public function index(Request $request, int $customerId): JsonResponse
     {
         $addresses = $this->addressService->listByCustomer($customerId, $request->user()->id);
-        return $this->success($addresses, 'Enderecos listados com sucesso.');
+        return $this->success(AddressResource::collection($addresses), 'Endereços listados com sucesso.');
     }
 
     public function store(Request $request, int $customerId): JsonResponse
     {
+        $rules = new StoreAddressRequest();
+
         try {
-            $this->validate($request, [
-                'cep'        => ['required', 'string', 'size:8'],
-                'number'     => ['required', 'string', 'max:20'],
-                'complement' => ['nullable', 'string', 'max:100'],
-            ], [
-                'cep.required'    => 'O CEP e obrigatorio.',
-                'cep.size'        => 'O CEP deve ter exatamente 8 digitos.',
-                'number.required' => 'O numero e obrigatorio.',
-                'number.max'      => 'O numero deve ter no maximo 20 caracteres.',
-                'complement.max'  => 'O complemento deve ter no maximo 100 caracteres.',
-            ]);
+            $this->validate($request, $rules->rules(), $rules->messages());
         } catch (ValidationException $e) {
-            return $this->error('Dados invalidos.', 422, $e->errors());
+            return $this->error('Dados inválidos.', 422, $e->errors());
         }
 
         $address = $this->addressService->create(
@@ -41,29 +36,23 @@ class AddressController extends Controller
             $request->user()->id
         );
 
-        return $this->created($address, 'Endereco criado com sucesso.');
+        return $this->created(new AddressResource($address), 'Endereço criado com sucesso.');
     }
 
     public function show(Request $request, int $customerId, int $id): JsonResponse
     {
         $address = $this->addressService->findOwned($id, $customerId, $request->user()->id);
-        return $this->success($address, 'Endereco encontrado.');
+        return $this->success(new AddressResource($address), 'Endereço encontrado.');
     }
 
     public function update(Request $request, int $customerId, int $id): JsonResponse
     {
+        $rules = new UpdateAddressRequest();
+
         try {
-            $this->validate($request, [
-                'cep'        => ['sometimes', 'string', 'size:8'],
-                'number'     => ['sometimes', 'string', 'max:20'],
-                'complement' => ['nullable', 'string', 'max:100'],
-            ], [
-                'cep.size'       => 'O CEP deve ter exatamente 8 digitos.',
-                'number.max'     => 'O numero deve ter no maximo 20 caracteres.',
-                'complement.max' => 'O complemento deve ter no maximo 100 caracteres.',
-            ]);
+            $this->validate($request, $rules->rules(), $rules->messages());
         } catch (ValidationException $e) {
-            return $this->error('Dados invalidos.', 422, $e->errors());
+            return $this->error('Dados inválidos.', 422, $e->errors());
         }
 
         $address = $this->addressService->update(
@@ -73,7 +62,7 @@ class AddressController extends Controller
             $request->user()->id
         );
 
-        return $this->success($address, 'Endereco atualizado com sucesso.');
+        return $this->success(new AddressResource($address), 'Endereço atualizado com sucesso.');
     }
 
     public function destroy(Request $request, int $customerId, int $id): JsonResponse
