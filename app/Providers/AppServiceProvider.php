@@ -7,6 +7,8 @@ use App\Domain\Address\Repositories\AddressRepositoryInterface;
 use App\Domain\Cep\CepGatewayInterface;
 use App\Domain\Customer\Repositories\CustomerRepository;
 use App\Domain\Customer\Repositories\CustomerRepositoryInterface;
+use App\Domain\User\Repositories\RevokedTokenRepository;
+use App\Domain\User\Repositories\RevokedTokenRepositoryInterface;
 use App\Domain\User\Repositories\UserRepository;
 use App\Domain\User\Repositories\UserRepositoryInterface;
 use App\Infrastructure\Gateways\BrasilApiCepGateway;
@@ -17,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
+        $this->app->bind(RevokedTokenRepositoryInterface::class, RevokedTokenRepository::class);
         $this->app->bind(CustomerRepositoryInterface::class, CustomerRepository::class);
         $this->app->bind(AddressRepositoryInterface::class, AddressRepository::class);
         $this->app->bind(CepGatewayInterface::class, BrasilApiCepGateway::class);

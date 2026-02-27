@@ -64,8 +64,14 @@ class AuthController extends Controller
         return $this->success(new UserResource($request->user()), 'Dados do usuário autenticado.');
     }
 
-    public function logout(): JsonResponse
+    public function logout(Request $request): JsonResponse
     {
+        $header = $request->header('Authorization', '');
+
+        if (str_starts_with($header, 'Bearer ')) {
+            $this->authService->logout(substr($header, 7));
+        }
+
         return $this->success(null, 'Logout realizado com sucesso.');
     }
 }
