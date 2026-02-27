@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Domain\Address\Repositories\AddressRepository;
+use App\Domain\Address\Repositories\AddressRepositoryInterface;
 use App\Domain\Cep\CepGatewayInterface;
 use App\Domain\Customer\Repositories\CustomerRepository;
 use App\Domain\Customer\Repositories\CustomerRepositoryInterface;
@@ -16,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(CustomerRepositoryInterface::class, CustomerRepository::class);
+        $this->app->bind(AddressRepositoryInterface::class, AddressRepository::class);
         $this->app->bind(CepGatewayInterface::class, BrasilApiCepGateway::class);
     }
 }

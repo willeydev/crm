@@ -31,4 +31,10 @@ $router->group(['prefix' => 'customers', 'middleware' => 'auth'], function () us
     $router->get('{id}',    'CustomerController@show');
     $router->put('{id}',    'CustomerController@update');
     $router->delete('{id}', 'CustomerController@destroy');
+
+    $router->get('{customerId}/addresses',             'AddressController@index');
+    $router->post('{customerId}/addresses',            'AddressController@store');
+    $router->get('{customerId}/addresses/{id}',        'AddressController@show');
+    $router->put('{customerId}/addresses/{id}',        'AddressController@update');
+    $router->delete('{customerId}/addresses/{id}',     'AddressController@destroy');
 });
