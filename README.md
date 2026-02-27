@@ -209,6 +209,25 @@ Após o logout, o token é adicionado a uma blacklist e rejeitado em requisiçõ
 
 ## 📬 Exemplos de requests
 
+### Collection do Postman
+
+Para testar a API de forma mais prática, importe a collection do Postman:
+
+**[Baixar collection](https://drive.google.com/file/d/1rlaJ0tSR16UALmTNoPpZLn5qDJOnO3Ma/view?usp=sharing)**
+
+Após importar, crie as seguintes variáveis de ambiente no Postman:
+
+| Variável | Descrição | Exemplo |
+|---|---|---|
+| `CRM_WILLEY_BASE_URL` | URL base da API | `http://localhost:8000` |
+| `CRM_WILLEY_JWT_TOKEN` | Token JWT obtido no login | `eyJ0eXAiOiJKV1Qi...` |
+
+Ou importe diretamente o ambiente com as variáveis pré-configuradas:
+
+**[Baixar environment](https://drive.google.com/file/d/1yTck0hbjTwqazgWrgLwH4j3GVz83F5ka/view?usp=sharing)**
+
+---
+
 ### Customers
 
 #### Listar clientes (com paginação)
