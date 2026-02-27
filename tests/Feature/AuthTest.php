@@ -54,7 +54,8 @@ class AuthTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
-        $this->assertResponseStatus(422);
+        $this->assertResponseStatus(409);
+        $this->seeJson(['success' => false, 'message' => 'E-mail já cadastrado.']);
     }
 
     public function test_register_fails_when_passwords_dont_match(): void

@@ -33,6 +33,12 @@ class AuthServiceTest extends UnitTestCase
         $user->id = 1;
 
         $this->userRepo
+            ->shouldReceive('findByEmail')
+            ->once()
+            ->with('joao@test.com')
+            ->andReturn(null);
+
+        $this->userRepo
             ->shouldReceive('create')
             ->once()
             ->with(['name' => 'João', 'email' => 'joao@test.com', 'password' => 'secret123'])
@@ -47,6 +53,25 @@ class AuthServiceTest extends UnitTestCase
         $this->assertSame($user, $result['user']);
         $this->assertNotEmpty($result['token']);
         $this->assertIsString($result['token']);
+    }
+
+    public function test_register_throws_exception_when_email_already_exists(): void
+    {
+        $existing = new User(['email' => 'joao@test.com']);
+
+        $this->userRepo
+            ->shouldReceive('findByEmail')
+            ->once()
+            ->with('joao@test.com')
+            ->andReturn($existing);
+
+        $this->expectException(\App\Domain\Exceptions\EmailAlreadyExistsException::class);
+
+        $this->service->register([
+            'name'     => 'João',
+            'email'    => 'joao@test.com',
+            'password' => 'secret123',
+        ]);
     }
 
     // =========================================================
