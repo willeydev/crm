@@ -2,38 +2,28 @@
 
 namespace App\Providers;
 
-use App\Models\User;
-use Illuminate\Support\Facades\Gate;
+use App\Application\Services\AuthService;
 use Illuminate\Support\ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
-    }
+    public function register(): void {}
 
-    /**
-     * Boot the authentication services for the application.
-     *
-     * @return void
-     */
-    public function boot()
+    public function boot(): void
     {
-        // Here you may define how you wish users to be authenticated for your Lumen
-        // application. The callback which receives the incoming request instance
-        // should return either a User instance or null. You're free to obtain
-        // the User instance via an API token or any other method necessary.
+        $this->app['auth']->viaRequest('jwt', function ($request) {
+            $header = $request->header('Authorization', '');
 
-        $this->app['auth']->viaRequest('api', function ($request) {
-            if ($request->input('api_token')) {
-                return User::where('api_token', $request->input('api_token'))->first();
+            if (! str_starts_with($header, 'Bearer ')) {
+                return null;
             }
+
+            $token = substr($header, 7);
+
+            /** @var AuthService $authService */
+            $authService = $this->app->make(AuthService::class);
+
+            return $authService->getUserFromToken($token);
         });
     }
 }
