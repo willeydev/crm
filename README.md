@@ -147,8 +147,14 @@ php artisan migrate
 Os testes usam SQLite em memória configurado via `phpunit.xml`. Nenhuma configuração adicional é necessária:
 
 ```bash
-php vendor/bin/phpunit
+docker-compose exec app composer install
 ```
+
+```bash
+docker-compose exec app php vendor/bin/phpunit
+```
+
+OBS: Você pode rodar os dois comandos anteriores sem "docker-compose exec app", caso queira executar fora do docker.
 
 ### Schema
 
